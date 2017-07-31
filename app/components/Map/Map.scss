@@ -1,0 +1,13 @@
+.map {
+  height: 500px;
+
+  &__container {
+    width: 70%;
+    height: 100%;
+    float: left;
+  }
+
+  &__history {
+    margin-left: 29%;
+  }
+}
