@@ -1,69 +1,85 @@
 // @flow
 
 import React, { Component } from 'react';
-import { compose, lifecycle } from 'recompose';
+import { first, last } from 'lodash';
 
 import History from '../History';
+import GoogleMapService from '../../services/GoogleMap';
 
 import './Map.scss';
 
+type PropsType = {
+  center: { lat: number, lng: number },
+}
+
 type StateType = {
-  isInitialized: boolean,
-  waypoints: Object[],
+  waypointsLength: number,
 }
 
 class Map extends Component {
-  mapRef: ?Element;
-  googleMap: google;
-
   state: StateType = {
-    isInitialized: false,
-    waypoints: [],
+    waypointsLength: 0,
   }
 
   componentDidMount() {
-    if (this.mapRef) {
+    if (this.mapRef instanceof HTMLElement) {
       this.createMap();
       this.bindClickListeners();
     }
   }
 
-  createMap() {
-    const uluru = { lat: -25.363, lng: 131.044 };
+  props: PropsType;
+  mapRef: ?HTMLElement;
 
-    this.googleMap = new google.maps.Map(this.mapRef, { center: uluru, zoom: 9 });
+  createMap() {
+    GoogleMapService.init(this.mapRef, this.props.center);
   }
 
   bindClickListeners() {
-    this.googleMap.addListener('click', e => {
+    GoogleMapService.bindClickListener((e) => {
       this.createMarker(e.latLng);
-    })
+    });
   }
 
-  createMarker(position: Object) {
-    var marker = new google.maps.Marker({
-      position: position,
-      map: this.googleMap,
-    });
-
-    this.googleMap.panTo(position);
+  createMarker(position: google.maps.LatLng) {
+    GoogleMapService.createMarker(position);
 
     this.setState({
-      waypoints: this.state.waypoints.concat([marker]),
-    })
+      waypointsLength: GoogleMapService.markers().length,
+    });
+  }
+
+  calcRoute = () => {
+    GoogleMapService.drawRouteThroughWaypoints().catch((status) => {
+      console.error(status);
+    });
+  }
+
+  renderWay() {
+    if (this.state.waypointsLength >= 2) {
+      return (
+        <div>
+          start: {first(GoogleMapService.markers()).getPosition().toString()}
+          end: {last(GoogleMapService.markers()).getPosition().toString()}
+        </div>
+      );
+    }
+
+    return 'Waiting for two points';
   }
 
   render() {
     return (
       <div className="map">
-        size: {this.state.waypoints.length}
-        <div className="map__container" ref={ref => { this.mapRef = ref }} />
+        {this.renderWay()}
+        <div className="map__container" ref={(ref) => { this.mapRef = ref; }} />
+        {this.state.waypointsLength >= 2 && <button onClick={this.calcRoute}>Calculate</button>}
         <div className="map__history">
           <History />
         </div>
       </div>
     );
   }
-};
+}
 
 export default Map;
