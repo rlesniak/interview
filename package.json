@@ -8,15 +8,14 @@
     "clean": "rimraf dist",
     "production": "cross-env npm run clean && webpack --config webpack.production.config.js --progress --profile --colors",
     "lint": "eslint ./app/**/**.js",
-    "test": "mocha --compilers js:babel-core/register --recursive ./tests/**/*.js",
-    "precommit": "cross-env npm run lint && npm test",
-    "prepush": "cross-env npm run lint && npm test"
+    "test": "mocha --compilers js:babel-core/register --recursive ./tests/**/*.js"
   },
   "author": "Kliment Petrov <kleopetroff@gmail.com>",
   "license": "MIT",
   "dependencies": {
     "@blueprintjs/core": "^1.24.0",
     "cross-env": "^5.0.1",
+    "lodash": "^4.17.4",
     "react": "^15.6.1",
     "react-addons-css-transition-group": "^15.6.0",
     "react-dom": "^15.6.1",

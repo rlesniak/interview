@@ -3,18 +3,20 @@
 import React, { Component } from 'react';
 import { first, last } from 'lodash';
 
-import History from '../History';
+import TripHistory from '../../containers/TripHistory';
 import GoogleMapService from '../../services/GoogleMap';
+
+import type { PositionType } from '../../modules/Trip/types';
 
 import './Map.scss';
 
 type PropsType = {
-  center: { lat: number, lng: number },
-}
+  center: PositionType,
+};
 
 type StateType = {
   waypointsLength: number,
-}
+};
 
 class Map extends Component {
   state: StateType = {
@@ -75,7 +77,7 @@ class Map extends Component {
         <div className="map__container" ref={(ref) => { this.mapRef = ref; }} />
         {this.state.waypointsLength >= 2 && <button onClick={this.calcRoute}>Calculate</button>}
         <div className="map__history">
-          <History />
+          <TripHistory />
         </div>
       </div>
     );

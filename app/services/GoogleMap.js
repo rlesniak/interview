@@ -57,16 +57,16 @@ const GoogleMapService = () => {
       };
 
       return new Promise((resolve, reject) => {
-        directionsService.route(request, (resp: Object, status: google.maps.DirectionsStatus)=> {
+        directionsService.route(request, (resp: Object, status: google.maps.DirectionsStatus) => {
           if (status === google.maps.DirectionsStatus.OK) {
             directionsDisplay.setDirections(resp)
             return resolve();
-          } else {
-            return reject(status);
           }
+
+          return reject(status);
         });
-      })
-    }
+      });
+    },
   }
 };
 

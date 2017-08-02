@@ -13,6 +13,9 @@
     "mocha": true,
     "es6": true
   },
+  "globals": {
+    "google": true
+  },
   "rules": {
     "space-before-function-paren": "off",
     "react/prefer-stateless-function": "warn",
