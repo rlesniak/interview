@@ -3,7 +3,7 @@
 import React, { Component } from 'react';
 import { first, last } from 'lodash';
 
-import TripHistory from '../../containers/TripHistory';
+import TripHistory from '../TripHistory';
 import GoogleMapService from '../../services/GoogleMap';
 
 import type { PositionType } from '../../modules/Trip/types';
@@ -12,6 +12,8 @@ import './Map.scss';
 
 type PropsType = {
   center: PositionType,
+  onMarkerAdd: (position: PositionType, tripId: ?string) => void,
+  activeTripId: ?string,
 };
 
 type StateType = {
@@ -44,11 +46,19 @@ class Map extends Component {
   }
 
   createMarker(position: google.maps.LatLng) {
+    const plainPosition = { lat: position.lat(), lng: position.lng() };
     GoogleMapService.createMarker(position);
+
+    this.props.onMarkerAdd(plainPosition, this.props.activeTripId)
 
     this.setState({
       waypointsLength: GoogleMapService.markers().length,
     });
+  }
+
+  clearMap = () => {
+    GoogleMapService.clearMarkers();
+    this.props.onClearMap();
   }
 
   calcRoute = () => {
@@ -57,27 +67,15 @@ class Map extends Component {
     });
   }
 
-  renderWay() {
-    if (this.state.waypointsLength >= 2) {
-      return (
-        <div>
-          start: {first(GoogleMapService.markers()).getPosition().toString()}
-          end: {last(GoogleMapService.markers()).getPosition().toString()}
-        </div>
-      );
-    }
-
-    return 'Waiting for two points';
-  }
-
   render() {
     return (
       <div className="map">
-        {this.renderWay()}
+        <h2>{this.props.activeTripId}</h2>
         <div className="map__container" ref={(ref) => { this.mapRef = ref; }} />
         {this.state.waypointsLength >= 2 && <button onClick={this.calcRoute}>Calculate</button>}
+        <button onClick={this.clearMap}>Clear map and create new trip</button>
         <div className="map__history">
-          <TripHistory />
+          <TripHistory activeTripId={this.props.activeTripId} trips={this.props.trips} />
         </div>
       </div>
     );

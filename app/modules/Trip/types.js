@@ -6,7 +6,7 @@ export type PositionType = {
 };
 
 export type StateType = {
-  activeTripId: string,
+  activeTripId: ?string,
   tripHistory: {
     [tripId: string]: PositionType[],
   },
