@@ -13,7 +13,9 @@ import './Map.scss';
 type PropsType = {
   center: PositionType,
   onMarkerAdd: (position: PositionType, tripId: ?string) => void,
+  onClearMap: () => void,
   activeTripId: ?string,
+  trips: Object,
 };
 
 type StateType = {
@@ -57,7 +59,7 @@ class Map extends Component {
   }
 
   clearMap = () => {
-    GoogleMapService.clearMarkers();
+    GoogleMapService.clearMap();
     this.props.onClearMap();
   }
 
@@ -65,6 +67,13 @@ class Map extends Component {
     GoogleMapService.drawRouteThroughWaypoints().catch((status) => {
       console.error(status);
     });
+  }
+
+  onTripSelect = (tripId: string) => {
+    const points = this.props.trips[tripId];
+
+    this.clearMap();
+    points.forEach(point => GoogleMapService.createMarker(new google.maps.LatLng(point)));
   }
 
   render() {
@@ -75,7 +84,11 @@ class Map extends Component {
         {this.state.waypointsLength >= 2 && <button onClick={this.calcRoute}>Calculate</button>}
         <button onClick={this.clearMap}>Clear map and create new trip</button>
         <div className="map__history">
-          <TripHistory activeTripId={this.props.activeTripId} trips={this.props.trips} />
+          <TripHistory
+            activeTripId={this.props.activeTripId}
+            trips={this.props.trips}
+            handleTripSelect={this.onTripSelect}
+          />
         </div>
       </div>
     );

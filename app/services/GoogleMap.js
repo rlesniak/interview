@@ -41,7 +41,9 @@ const GoogleMapService = () => {
 
       return marker;
     },
-    clearMarkers: () => {
+    clearMap: () => {
+      directionsDisplay.setMap(null);
+
       markers.forEach((marker) => {
         marker.setMap(null);
       });
